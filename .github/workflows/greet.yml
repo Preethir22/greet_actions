@@ -1,38 +1,26 @@
-name: 🚀 Greet & Notify
-
-on:
-  push:
-
 jobs:
   greet-and-notify:
     runs-on: ubuntu-latest
     steps:
-      - name: 🎉 Print Fancy Greeting
-        run: |
-          echo "======================================="
-          echo "🎯  CI/CD Pipeline Triggered!"
-          echo "💬  Hello from GitHub Actions!"
-          echo "🕒  $(date)"
-          echo "======================================="
+      - name: Print Greeting
+        run: echo "Hello from GitHub Actions!"
 
-      - name: ✉️ Send Email Notification
+      - name: Try Send Email
+        id: send_email
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 🚀 GitHub Actions – CI Success!
-          to: your-email@example.com
-          from: GitHub Actions <your-email@example.com>
-          body: |
-            🎉 Hello Dev!
+          # email settings here...
+        continue-on-error: true
 
-            Your latest push just triggered our CI/CD pipeline.
-
-            ✅ Greeting printed successfully
-            ✅ Email delivered
-            🔗 Repo: ${{ github.repository }}
-            🕒 Time: ${{ github.event.head_commit.timestamp }}
-
-            Stay awesome 💫
+      - name: Write Email Status
+        run: |
+          if [ ${{ steps.send_email.outcome }} == 'success' ]; then
+            echo "Email Status: SUCCESS" > email_status.txt
+          else
+            echo "Email Status: FAILURE" > email_status.txt
+          fi
+      - name: Commit Status File
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Update email status"
+          file_pattern: email_status.txt
