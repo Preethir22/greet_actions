@@ -1,0 +1,38 @@
+name: 🚀 Greet & Notify
+
+on:
+  push:
+
+jobs:
+  greet-and-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🎉 Print Fancy Greeting
+        run: |
+          echo "======================================="
+          echo "🎯  CI/CD Pipeline Triggered!"
+          echo "💬  Hello from GitHub Actions!"
+          echo "🕒  $(date)"
+          echo "======================================="
+
+      - name: ✉️ Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 🚀 GitHub Actions – CI Success!
+          to: your-email@example.com
+          from: GitHub Actions <your-email@example.com>
+          body: |
+            🎉 Hello Dev!
+
+            Your latest push just triggered our CI/CD pipeline.
+
+            ✅ Greeting printed successfully
+            ✅ Email delivered
+            🔗 Repo: ${{ github.repository }}
+            🕒 Time: ${{ github.event.head_commit.timestamp }}
+
+            Stay awesome 💫
