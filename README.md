@@ -6,3 +6,6 @@
 > ✅ It prints a friendly greeting  
 > 📬 Sends you a styled email notification  
 > 🎉 Fully automated with GitHub Actions
+
+
+<!-- trigger -->
