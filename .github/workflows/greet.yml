@@ -1,3 +1,8 @@
+name: 🚀 Greet & Notify
+
+on:
+  push:
+
 jobs:
   greet-and-notify:
     runs-on: ubuntu-latest
@@ -5,22 +10,33 @@ jobs:
       - name: Print Greeting
         run: echo "Hello from GitHub Actions!"
 
-      - name: Try Send Email
-        id: send_email
+      - name: Send Email Notification
         uses: dawidd6/action-send-mail@v3
         with:
-          # email settings here...
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}     # Your email set as secret
+          password: ${{ secrets.EMAIL_PASSWORD }}     # Your Gmail App Password secret
+          subject: GitHub Actions - Push Notification
+          to: kopinath@cambridge.edu.in               # Your email
+          from: GitHub Actions <kopinath@cambridge.edu.in>
+          body: "Hey! Your repo got a new push. 🎉"
         continue-on-error: true
 
       - name: Write Email Status
         run: |
-          if [ ${{ steps.send_email.outcome }} == 'success' ]; then
+          if [ "${{ steps.send_email.outcome }}" == "success" ]; then
             echo "Email Status: SUCCESS" > email_status.txt
           else
             echo "Email Status: FAILURE" > email_status.txt
           fi
+
       - name: Commit Status File
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "Update email status"
           file_pattern: email_status.txt
+          commit_user_name: github-actions
+          commit_user_email: github-actions@github.com
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}     # Your PAT token secret
